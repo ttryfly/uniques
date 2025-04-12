@@ -1,57 +1,57 @@
-名称：构建混淆BPB面板
+name: Build Obfuscate BPB Panel
 
-
-  推输入：
-    分行：
-      - 主页
-  日程安排:
-        # 每天凌晨1:00运行
+on:
+  push:
+    branches:
+      - main
+  schedule:
+        # Runs everyday at 1:00 AM
         - cron: "0 1 * * *"
 
-权限：
-  目录：写
+permissions:
+  contents: write
 
-工作：
-  构建：
-    运行于：ubuntu-latest
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-    步骤：
-      - 名称: 查看代码
-        使用：actions/checkout@v4
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
 
-      - 名称: 设置 Node.js
-        使用：actions/setup-node@v4
-        与：
-          节点版本： "最新"
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "latest"
 
-      - 名称: 安装依赖项
-        运行： |
+      - name: Install dependencies
+        run: |
           npm install -g javascript-obfuscator
 
-      - 名称: 克隆BPB工作集
-        运行： |
+      - name: Clone BPB workjs
+        run: |
           wget -O origin.js https://raw.githubusercontent.com/bia-pain-bache/BPB-Worker-Panel/refs/heads/main/build/unobfuscated-worker.js
       
-      - 名称: 混淆BPB工作器js
-        运行： |
-          javascript-obfuscator origin.js --output _worker.js
-          --紧凑 真
-          --控制流展平 true
-          --控制流平坦化阈值 1
-          --死代码注入 true
-          --死代码注入阈值 1
-          --标识符名称生成器 十六进制
-          --重命名全局变量 true
-          --字符串数组 true
-          --字符串数组编码 'rc4' \
+      - name: Obfuscate BPB worker js
+        run: |
+          javascript-obfuscator origin.js --output _worker.js \
+          --compact true \
+          --control-flow-flattening true \
+          --control-flow-flattening-threshold 1 \
+          --dead-code-injection true \
+          --dead-code-injection-threshold 1 \
+          --identifier-names-generator hexadecimal \
+          --rename-globals true \
+          --string-array true \
+          --string-array-encoding 'rc4' \
           --string-array-threshold 1 \
-          --转换对象键 true
+          --transform-object-keys true \
           --unicode-escape-sequence true
 
-      - 名称: 提交更改
-        使用：stefanzweifel/git-auto-commit-action@v5
-        与：
-          分支： 主分支
-          提交信息: ':箭头向上: 更新最新的bpb面板'
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          branch: main
+          commit_message: ':arrow_up: update latest bpb panel'
           commit_author: 'github-actions[bot] <github-actions[bot]@users.noreply.github.com>'
           push_options: '--set-upstream'
